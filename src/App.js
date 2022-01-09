@@ -1,52 +1,34 @@
-import React, { useState, UseEffect, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
-import { ReacipeCard } from "./component/ReacipeCard";
-import { Searchbar } from "./component/Searchbar";
-
-const ApiUrl = "https://www.themealdb.com/api/json/v1/1/search.php?s=";
+import { Categoryies } from "./Categoryies";
+import Data from "./Data";
+import { Menu } from "./Menu";
+const AllCategory = ["all", ...new Set(Data.map((item) => item.category))];
 
 export const App = () => {
-  const [loading, Setloading] = useState(false);
-  const [query, Setquery] = useState("");
-  const [recipe, setrecipe] = useState([]);
+  const [cat, setcat] = useState(AllCategory);
+  const [Dat,setDat]=useState(Data)
 
-  const Searchrecipe = async () => {
-    Setloading(true);
-    const url = ApiUrl + query;
-    const res = await fetch(url);
-    const data = await res.json();
-    setrecipe(data.meals);
-    Setloading(false);
-    console.log(data);
-  };
-  const Handlesubmit = (e) => {
-    e.preventDefault();
-    Searchrecipe();
-    Setquery("")
-  };
-  useEffect(() => {
-    Setloading(true);
-    // Searchrecipe();
-    fetch(ApiUrl + query)
-      .then((response) => response.json())
-      .then((data) => setrecipe(data.meals));
-    Setloading(false);
-  }, []);
+  const FilterCategory=(cat)=>{
+    if("all"==cat){
+      setDat(Data)
+      return;
+
+    }
+    const NewCat=Data.filter((item)=>item.category==cat)
+    setDat(NewCat)
+  }
   return (
-    <div className="container">
-      <h1>Mazzali ovqatlar</h1>
-      <Searchbar
-        Handlesubmit={Handlesubmit}
-        value={query}
-        onChange={(e)=>Setquery(e.target.value)}
-      />
-      <div className="recipe">
-        {recipe
-          ? recipe.map((value) => (
-              <ReacipeCard key={value.idMeal} recipes={value} />
-            ))
-          : "bunday taom mavjud emas"}
-      </div>
+    <div>
+      <section className="menu-section">
+        <div className="title">
+          <h2>Our Project</h2>
+        </div>
+        <div className="underline"></div>
+
+        <Categoryies FilterCategory={FilterCategory} cat={cat} />
+        <Menu  Dat={Dat}/>
+      </section>
     </div>
   );
 };
